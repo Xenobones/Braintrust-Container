@@ -21,7 +21,7 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
 // BT3_PROJECTS_ROOT correctly points to /collabchat/ per your server layout
 if (!defined('BT3_PROJECTS_ROOT')) {
-    define('BT3_PROJECTS_ROOT', '/var/www/html/braintrust-IDE-3/collabchat/projects/');
+    define('BT3_PROJECTS_ROOT', '/var/www/html/collabchat/projects/');
 }
 
 // Ensure base folder exists

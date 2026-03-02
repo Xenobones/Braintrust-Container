@@ -12,7 +12,7 @@ $file = $_GET['file'] ?? '';
 $project = preg_replace('/[^a-zA-Z0-9_-]/', '', $project);
 $file = basename($file);
 
-$filePath = "/var/www/html/braintrust-IDE-3/collabchat/projects/{$project}/{$file}";
+$filePath = "/var/www/html/collabchat/projects/{$project}/{$file}";
 
 if (!file_exists($filePath)) {
     die('File not found');

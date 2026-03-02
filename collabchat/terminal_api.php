@@ -22,7 +22,7 @@ $project = $_POST['project'] ?? $_GET['project'] ?? '';
 
 // Make sure BT3_PROJECTS_ROOT is defined
 if (!defined('BT3_PROJECTS_ROOT')) {
-    define('BT3_PROJECTS_ROOT', '/var/www/html/braintrust-IDE-3/collabchat/projects/');
+    define('BT3_PROJECTS_ROOT', '/var/www/html/collabchat/projects/');
 }
 
 // SSH config for privileged commands

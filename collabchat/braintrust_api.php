@@ -650,7 +650,7 @@ function getClaudeResponseCLI($conn, $session_id, $message, $pinned_context) {
     }
 
     // Execute with streaming output (retry up to 3 times with exponential backoff)
-    $logFile = '/var/www/html/braintrust-IDE-3/collabchat/logs/braintrust_cli_' . $session_id . '_claude.log';
+    $logFile = '/var/www/html/collabchat/logs/braintrust_cli_' . $session_id . '_claude.log';
     $env = ['ANTHROPIC_API_KEY' => CLAUDE_API_KEY];
     $result = null;
     for ($attempt = 1; $attempt <= 3; $attempt++) {
@@ -742,7 +742,7 @@ function getGeminiResponseCLI($conn, $session_id, $message, $pinned_context) {
 
     // Execute in project directory (retry up to 3 times with exponential backoff)
     // Write stderr to log file for CLI Monitor visibility
-    $logFile = '/var/www/html/braintrust-IDE-3/collabchat/logs/braintrust_cli_' . $session_id . '_gemini.log';
+    $logFile = '/var/www/html/collabchat/logs/braintrust_cli_' . $session_id . '_gemini.log';
     file_put_contents($logFile, "[" . date('H:i:s') . "] [system] Gemini CLI invoked\n");
     file_put_contents($logFile . '.running', '1');
 
@@ -839,7 +839,7 @@ function invokeAIManager($conn, $session_id, $provider, $message, $pinned_contex
     }
 
     // Callback URL — ai_manager POSTs here when AI response is complete
-    $callback_url = 'http://127.0.0.1/braintrust-IDE-3/collabchat/braintrust_api.php?action=ai_response_complete';
+    $callback_url = 'http://127.0.0.1/collabchat/braintrust_api.php?action=ai_response_complete';
 
     $payload = json_encode([
         'session_id'     => $session_id,
@@ -1618,7 +1618,7 @@ function processAIToolCalls($conn, $session_id, $message, $ai_type = '') {
     if (!$result) return;
     
     // Define root (hardcoded for safety/consistency)
-    $projects_root = '/var/www/html/braintrust-IDE-3/collabchat/projects/';
+    $projects_root = '/var/www/html/collabchat/projects/';
     $project_dir = $projects_root . $result['project_path'];
     
     // 2. CREATE_FILE Logic
@@ -2250,7 +2250,7 @@ function getProjectPath($conn, $session_id) {
     
     // Convert relative path to absolute
     if ($path && $path[0] !== '/') {
-        $path = '/var/www/html/braintrust-IDE-3/collabchat/projects/' . $path;
+        $path = '/var/www/html/collabchat/projects/' . $path;
     }
     
     return $path;
@@ -2366,7 +2366,7 @@ function getCliLog($conn, $user_id) {
         return;
     }
 
-    $logFile = '/var/www/html/braintrust-IDE-3/collabchat/logs/braintrust_cli_' . $session_id . '_' . $provider . '.log';
+    $logFile = '/var/www/html/collabchat/logs/braintrust_cli_' . $session_id . '_' . $provider . '.log';
     $runningFile = $logFile . '.running';
 
     // Check running status (auto-clean stale flags older than 5 minutes)

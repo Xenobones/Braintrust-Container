@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id'])) {
 require_once '/var/www/secure_config/braintrust_config.php';
 
 if (!defined('BT3_PROJECTS_ROOT')) {
-    define('BT3_PROJECTS_ROOT', '/var/www/html/braintrust-IDE-3/collabchat/projects/');
+    define('BT3_PROJECTS_ROOT', '/var/www/html/collabchat/projects/');
 }
 
 $project = basename(trim($_GET['project'] ?? ''));

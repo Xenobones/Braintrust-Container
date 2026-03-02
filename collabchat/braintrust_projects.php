@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = "A project with that name already exists.";
             } else {
                 // Create the project folder
-                $projects_root = '/var/www/html/braintrust-IDE-3/collabchat/projects/';
+                $projects_root = '/var/www/html/collabchat/projects/';
                 $project_path = $projects_root . $folder_name;
                 
                 if (!is_dir($project_path)) {
@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if ($result) {
                 // Delete project folder
-                $projects_root = '/var/www/html/braintrust-IDE-3/collabchat/projects/';
+                $projects_root = '/var/www/html/collabchat/projects/';
                 $folder = $projects_root . $result['project_path'];
                 if (is_dir($folder)) {
                     // Recursive delete

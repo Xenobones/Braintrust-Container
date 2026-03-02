@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Use the actual BT3_PROJECTS_ROOT (shared with v1 so both versions see the same projects)
-define('BT3_PROJECTS_ROOT', '/var/www/html/braintrust-IDE-3/collabchat/projects/');
+define('BT3_PROJECTS_ROOT', '/var/www/html/collabchat/projects/');
 
 $project_name = basename($_GET['project'] ?? '');
 if (!$project_name) {

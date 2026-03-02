@@ -22,7 +22,7 @@ if (!$sessionId || !$projectPath || !$diagramHtml || !$diagramSource) {
 
 // Sanitize project path
 $safePath = str_replace(['..', '//', '\\'], '', $projectPath);
-$projectDir = "/var/www/html/braintrust-IDE-3/collabchat/projects/{$safePath}";
+$projectDir = "/var/www/html/collabchat/projects/{$safePath}";
 
 // Create whiteboards directory
 $whiteboardDir = "{$projectDir}/whiteboards";

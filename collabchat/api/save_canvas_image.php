@@ -58,7 +58,7 @@ if (!$project_rel) {
 }
 
 // Build absolute path using BT3_PROJECTS_ROOT constant (set in config)
-$project_path = (defined('BT3_PROJECTS_ROOT') ? BT3_PROJECTS_ROOT : '/var/www/html/braintrust-IDE-3/collabchat/projects/')
+$project_path = (defined('BT3_PROJECTS_ROOT') ? BT3_PROJECTS_ROOT : '/var/www/html/collabchat/projects/')
               . ltrim($project_rel, '/');
 
 if (!is_dir($project_path)) {

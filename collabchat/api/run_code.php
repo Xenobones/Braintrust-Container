@@ -27,7 +27,7 @@ $safeFilename = str_replace('..', '', $safeFilename); // Block directory travers
 $safeFilename = ltrim($safeFilename, '/'); // Remove leading slashes
 
 // Full path to project
-$projectDir = "/var/www/html/braintrust-IDE-3/collabchat/projects/{$safePath}";
+$projectDir = "/var/www/html/collabchat/projects/{$safePath}";
 $scriptPath = "{$projectDir}/{$safeFilename}";
 
 // Verify file exists
