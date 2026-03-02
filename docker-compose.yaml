@@ -41,8 +41,7 @@ services:
       - claude_sessions:/root/.claude
       - claude_sessions:/home/www-data/.claude
     depends_on:
-      mysql:
-        condition: service_healthy
+      - mysql
 
   mysql:
     image: mysql:8.0
