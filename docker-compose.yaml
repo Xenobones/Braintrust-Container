@@ -7,7 +7,6 @@ services:
     container_name: braintrust
     restart: unless-stopped
     ports:
-      - "${APP_PORT:-80}:80"
       - "${WS_PORT:-8081}:8081"
       - "${TERM_PORT:-8083}:8083"
     environment:
