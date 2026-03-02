@@ -1,0 +1,30 @@
+# Secure config with API keys - NEVER commit this!
+secure_config/
+
+# User-generated project data
+collabchat/projects/*/
+collabchat/whiteboards/
+
+# User uploads
+collabchat/uploads/
+uploads/
+
+# System files
+.DS_Store
+*.log
+*.tmp
+
+# Node
+node_modules/
+collabchat/node_modules/
+
+# IDE files
+.vscode/
+.idea/
+
+# Any other sensitive files
+config.php
+database.php
+shannon.md
+.env
+.env.local

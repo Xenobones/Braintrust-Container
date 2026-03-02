@@ -1,0 +1,70 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: braintrust
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-80}:80"
+      - "${WS_PORT:-8081}:8081"
+      - "${TERM_PORT:-8083}:8083"
+    environment:
+      # Database
+      - DB_HOST=mysql
+      - DB_USER=${DB_USER:-braintrust_user}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME:-braintrust_ide}
+      # API Keys
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o}
+      # GitHub
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_USERNAME=${GITHUB_USERNAME:-}
+      # Dev DB (for AI-created projects — uses same MySQL instance, same user)
+      - DEV_DB_HOST=mysql
+      - DEV_DB_USER=${DB_USER:-braintrust_user}
+      - DEV_DB_PASS=${DB_PASS}
+      - DEV_DB_NAME=${DEV_DB_NAME:-dev_projects}
+      # App
+      - APP_BASE_PATH=${APP_BASE_PATH:-/collabchat/projects}
+      - BT_PROJECTS_ROOT=/var/www/html/collabchat/projects/
+    volumes:
+      # Persist project files across container restarts
+      - projects_data:/var/www/html/collabchat/projects
+      # Docker socket — required for Python/code sandbox execution
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Claude CLI session data (persists AI memory across restarts)
+      - claude_sessions:/root/.claude
+      - claude_sessions:/home/www-data/.claude
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.0
+    container_name: braintrust-db
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME:-braintrust_ide}
+      - MYSQL_USER=${DB_USER:-braintrust_user}
+      - MYSQL_PASSWORD=${DB_PASS}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      # Auto-import schema on first run (runs alphabetically)
+      - ./sql_schema.txt:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./docker/init-dev-db.sql:/docker-entrypoint-initdb.d/02-dev-db.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  projects_data:
+  mysql_data:
+  claude_sessions:

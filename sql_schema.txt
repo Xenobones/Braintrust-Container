@@ -1,0 +1,245 @@
+ -- Structure for table `braintrust_context_history`
+CREATE TABLE `braintrust_context_history` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `session_id` int unsigned NOT NULL,
+  `user_id` int unsigned NOT NULL,
+  `old_content` text COLLATE utf8mb4_unicode_ci,
+  `new_content` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `session_id` (`session_id`),
+  CONSTRAINT `braintrust_context_history_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `braintrust_sessions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ENCRYPTION='Y';
+
+-- Structure for table `braintrust_members`
+CREATE TABLE `braintrust_members` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `session_id` int unsigned NOT NULL,
+  `user_id` int unsigned NOT NULL,
+  `role` enum('owner','collaborator') COLLATE utf8mb4_unicode_ci DEFAULT 'collaborator',
+  `turn_order` int NOT NULL,
+  `joined_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_member` (`session_id`,`user_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `braintrust_members_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `braintrust_sessions` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `braintrust_members_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ENCRYPTION='Y';
+
+-- Structure for table `braintrust_messages`
+CREATE TABLE `braintrust_messages` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `session_id` int unsigned NOT NULL,
+  `sender_type` enum('human','claude','gemini','system') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sender_user_id` int unsigned DEFAULT NULL,
+  `parent_message_id` int unsigned DEFAULT NULL,
+  `message_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_summary` tinyint(1) DEFAULT '0',
+  `summary_range` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `token_count` int DEFAULT '0',
+  `cost` decimal(10,6) DEFAULT '0.000000',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `session_id` (`session_id`),
+  KEY `sender_user_id` (`sender_user_id`),
+  KEY `idx_parent_msg` (`parent_message_id`),
+  CONSTRAINT `braintrust_messages_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `braintrust_sessions` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `braintrust_messages_ibfk_2` FOREIGN KEY (`sender_user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=310 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ENCRYPTION='Y';
+
+-- Structure for table `braintrust_projects`
+CREATE TABLE `braintrust_projects` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int unsigned NOT NULL,
+  `project_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `project_path` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `git_repo` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_opened` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `braintrust_projects_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ENCRYPTION='Y';
+
+-- Structure for table `braintrust_sessions`
+CREATE TABLE `braintrust_sessions` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `owner_id` int unsigned NOT NULL,
+  `session_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'Untitled Session',
+  `pinned_context` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `is_archived` tinyint(1) DEFAULT '0',
+  `current_file` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `project_id` int unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `owner_id` (`owner_id`),
+  KEY `project_id` (`project_id`),
+  CONSTRAINT `braintrust_sessions_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `braintrust_sessions_ibfk_2` FOREIGN KEY (`project_id`) REFERENCES `braintrust_projects` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ENCRYPTION='Y';
+
+-- Structure for table `braintrust_turn_state`
+CREATE TABLE `braintrust_turn_state` (
+  `session_id` int unsigned NOT NULL,
+  `current_turn_type` enum('human','claude','gemini') COLLATE utf8mb4_unicode_ci DEFAULT 'human',
+  `current_human_order` int DEFAULT '1',
+  `consecutive_ai_turns` int DEFAULT '0',
+  `last_addressed` enum('claude','gemini') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `claude_enabled` tinyint(1) DEFAULT '1',
+  `gemini_enabled` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`session_id`),
+  CONSTRAINT `braintrust_turn_state_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `braintrust_sessions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ENCRYPTION='Y';
+
+-- Structure for table `braintrust_whiteboard`
+CREATE TABLE `braintrust_whiteboard` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `session_id` int unsigned NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `diagram_type` enum('mermaid','svg','html') COLLATE utf8mb4_unicode_ci DEFAULT 'mermaid',
+  `version_number` int DEFAULT '1',
+  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by_type` enum('human','claude','gemini') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by_user_id` int unsigned DEFAULT NULL,
+  `message_id` int unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `session_id` (`session_id`),
+  KEY `created_by_user_id` (`created_by_user_id`),
+  KEY `message_id` (`message_id`),
+  CONSTRAINT `braintrust_whiteboard_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `braintrust_sessions` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `braintrust_whiteboard_ibfk_2` FOREIGN KEY (`created_by_user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `braintrust_whiteboard_ibfk_3` FOREIGN KEY (`message_id`) REFERENCES `braintrust_messages` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ENCRYPTION='Y';
+
+-- Structure for table `characters`
+CREATE TABLE `characters` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `owner_id` int NOT NULL,
+  `char_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `character_class` enum('Combat Specialist','Medic','Criminal','Scientist','Survivalist','Esper','Civilian') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `char_level` int DEFAULT '1',
+  `life_points` int NOT NULL,
+  `max_life_points` int NOT NULL,
+  `attack_bonus` int DEFAULT '0',
+  `defense_bonus` int DEFAULT '0',
+  `stealth_modifier` int DEFAULT '0',
+  `insanity_points` int DEFAULT '0',
+  `skills` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
+  `traits` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
+  `milestones` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
+  `weapons` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
+  `starting_equipment` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
+  `equipment` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
+  `electronic_components` int DEFAULT '0',
+  `chemical_components` int DEFAULT '0',
+  `money_dollars` int DEFAULT '0',
+  `current_area` int DEFAULT '1',
+  `safe_house_area` int DEFAULT NULL,
+  `mission_type` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `clues_collected` int DEFAULT '0',
+  `secrets_discovered` int DEFAULT '0',
+  `minions_defeated` int DEFAULT '0',
+  `bosses_defeated` int DEFAULT '0',
+  `weird_menaces_defeated` int DEFAULT '0',
+  `sprite_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `characters_chk_1` CHECK (json_valid(`skills`)),
+  CONSTRAINT `characters_chk_2` CHECK (json_valid(`traits`)),
+  CONSTRAINT `characters_chk_3` CHECK (json_valid(`milestones`)),
+  CONSTRAINT `characters_chk_4` CHECK (json_valid(`weapons`)),
+  CONSTRAINT `characters_chk_5` CHECK (json_valid(`starting_equipment`)),
+  CONSTRAINT `characters_chk_6` CHECK (json_valid(`equipment`))
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ENCRYPTION='Y';
+
+-- Structure for table `characters_backup`
+CREATE TABLE `characters_backup` (
+  `id` int NOT NULL DEFAULT '0',
+  `owner_id` int unsigned NOT NULL,
+  `char_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `char_level` int DEFAULT '1',
+  `current_hp` int DEFAULT '10',
+  `base_hp` int DEFAULT '10',
+  `xp` int DEFAULT '0',
+  `shift` int DEFAULT '2',
+  `discipline` int DEFAULT '1',
+  `precision_stat` int DEFAULT '0',
+  `gc` int DEFAULT '0',
+  `sc` int DEFAULT '0',
+  `cc` int DEFAULT '0',
+  `rations` int DEFAULT '3',
+  `liberated_prisoners` int DEFAULT '0',
+  `legend_level_tracker` int DEFAULT '0',
+  `bloodied_track` int DEFAULT '0',
+  `soaked_track` int DEFAULT '0',
+  `weapon` text COLLATE utf8mb4_unicode_ci,
+  `manoeuvres` text COLLATE utf8mb4_unicode_ci,
+  `armour` text COLLATE utf8mb4_unicode_ci,
+  `magic_scrolls` text COLLATE utf8mb4_unicode_ci,
+  `magic_potions` text COLLATE utf8mb4_unicode_ci,
+  `large_items` text COLLATE utf8mb4_unicode_ci,
+  `small_items` text COLLATE utf8mb4_unicode_ci,
+  `side_quests` text COLLATE utf8mb4_unicode_ci,
+  `loot_lockup` text COLLATE utf8mb4_unicode_ci,
+  `fp_grakada` int DEFAULT '0',
+  `fp_intuneric` int DEFAULT '0',
+  `fp_maduva` int DEFAULT '0',
+  `fp_murataynie` int DEFAULT '0',
+  `fp_nevazator` int DEFAULT '0',
+  `fp_radacina` int DEFAULT '0',
+  `sprite_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `current_room_data` text COLLATE utf8mb4_unicode_ci,
+  `discovered_rooms` longtext COLLATE utf8mb4_unicode_ci COMMENT 'JSON data of all discovered rooms',
+  `current_x` int DEFAULT '0' COMMENT 'Current X position in dungeon',
+  `current_y` int DEFAULT '0' COMMENT 'Current Y position in dungeon'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ENCRYPTION='Y';
+
+-- Structure for table `chat_messages`
+CREATE TABLE `chat_messages` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `character_id` int DEFAULT '0',
+  `character_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT 'System',
+  `message_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_character_id` (`character_id`),
+  KEY `idx_created_at` (`created_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ENCRYPTION='Y';
+
+-- Structure for table `file_uploads`
+CREATE TABLE `file_uploads` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `uploader_id` int unsigned NOT NULL,
+  `recipient_id` int unsigned NOT NULL,
+  `original_filename` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `stored_filename` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `upload_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `recipient_id` (`recipient_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ENCRYPTION='Y';
+
+-- Structure for table `test_treasure`
+CREATE TABLE `test_treasure` (
+  `id` int NOT NULL,
+  `gold_pieces` int DEFAULT NULL,
+  `rum_barrels` int DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ENCRYPTION='Y';
+
+-- Structure for table `users`
+CREATE TABLE `users` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `full_name` varchar(120) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `password_hash` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `ccmc_staff` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 for yes, 0 for no',
+  `role` varchar(50) COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'User',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ENCRYPTION='Y';

@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrainTrust IDE v3 - User Guide</title>
+    <style>
+        :root {
+            --bg-darkest: #0a0a0f;
+            --bg-dark: #12121a;
+            --bg-panel: #1a1a25;
+            --bg-elevated: #242435;
+            --border-subtle: #2a2a3d;
+            --border-glow: #4a4a6a;
+            --text-primary: #e8e8f0;
+            --text-secondary: #9090a8;
+            --text-muted: #606078;
+            --accent-claude: #d4a574;
+            --accent-gemini: #7aa2f7;
+            --accent-human: #9ece6a;
+            --danger: #f7768e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-darkest);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header/Hero */
+        .hero {
+            background: linear-gradient(135deg, var(--accent-claude), var(--accent-gemini));
+            color: white;
+            padding: 60px 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 60px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .hero h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .hero .tagline {
+            font-size: 1.2em;
+            opacity: 0.95;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* TOC */
+        .toc {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-subtle);
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 60px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .toc h2 {
+            background: linear-gradient(135deg, var(--accent-claude), var(--accent-gemini));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .toc-item {
+            padding: 15px;
+            background: var(--bg-panel);
+            border-left: 4px solid var(--accent-gemini);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .toc-item:hover {
+            background: var(--bg-elevated);
+            border-color: var(--accent-gemini);
+            transform: translateX(5px);
+        }
+
+        .toc-item a {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Section */
+        .section {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-subtle);
+            padding: 50px 40px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .section h2 {
+            background: linear-gradient(135deg, var(--accent-claude), var(--accent-gemini));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2em;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border-glow);
+            padding-bottom: 15px;
+        }
+
+        .section h3 {
+            color: var(--accent-gemini);
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .section p {
+            margin-bottom: 15px;
+            font-size: 1.05em;
+            color: var(--text-secondary);
+        }
+
+        .section ul, .section ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        .section li {
+            margin-bottom: 10px;
+            font-size: 1.05em;
+            color: var(--text-secondary);
+        }
+
+        /* Placeholder Image */
+        .placeholder-image {
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 4em;
+            font-weight: bold;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            aspect-ratio: 16/9;
+            border: 2px dashed var(--border-glow);
+        }
+
+        .placeholder-text {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.5em;
+            font-weight: normal;
+        }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 25px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-panel);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--accent-claude), var(--accent-gemini));
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+
+        tr:hover {
+            background: var(--bg-elevated);
+        }
+
+        /* Callout Box */
+        .callout {
+            background: var(--bg-elevated);
+            border-left: 5px solid var(--accent-gemini);
+            border: 1px solid var(--border-subtle);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            font-size: 1.05em;
+            color: var(--text-secondary);
+        }
+
+        .callout strong {
+            color: var(--accent-gemini);
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.1), rgba(122, 162, 247, 0.1));
+            border: 1px solid var(--border-glow);
+            color: var(--text-primary);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-gemini);
+        }
+
+        .feature-card h3 {
+            color: var(--accent-gemini);
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            margin-bottom: 0;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--bg-panel);
+            color: var(--accent-human);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+            border: 1px solid var(--border-subtle);
+        }
+
+        /* Tips Section */
+        .tips-section {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-glow);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+
+        .tips-section h3 {
+            color: var(--accent-claude);
+            margin-top: 0;
+        }
+
+        .tips-section li {
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        .tips-section p {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            margin-top: 60px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        /* Keyboard Key Style */
+        .key {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-glow);
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: bold;
+            display: inline-block;
+            margin: 0 2px;
+            color: var(--accent-human);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2em;
+            }
+
+            .section {
+                padding: 30px 20px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HERO SECTION -->
+        <div class="hero">
+            <h1>🧠💻 BrainTrust IDE v3</h1>
+            <div class="tagline">One IDE to code them all, One Prompt to find them,<br>One Human to bring them all, and in the codebase bind them.</div>
+            <p>A specialized collaborative web-based IDE where you, Claude, and Gemini work together as a real team on software projects.</p>
+        </div>
+
+        <!-- TABLE OF CONTENTS -->
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <div class="toc-grid">
+                <div class="toc-item"><a href="#what-is">What Is BrainTrust?</a></div>
+                <div class="toc-item"><a href="#getting-started">Getting Started</a></div>
+                <div class="toc-item"><a href="#layout">IDE Layout</a></div>
+                <div class="toc-item"><a href="#explorer">Explorer Panel</a></div>
+                <div class="toc-item"><a href="#chat">Chat Panel</a></div>
+                <div class="toc-item"><a href="#editor">Editor Panel</a></div>
+                <div class="toc-item"><a href="#ai-collab">AI Collaboration</a></div>
+                <div class="toc-item"><a href="#ai-permissions">AI Permissions</a></div>
+                <div class="toc-item"><a href="#canvas">Image Canvas</a></div>
+                <div class="toc-item"><a href="#terminal">Terminal</a></div>
+                <div class="toc-item"><a href="#whiteboard">Whiteboard</a></div>
+                <div class="toc-item"><a href="#github">GitHub Integration</a></div>
+                <div class="toc-item"><a href="#web-preview">Web Preview</a></div>
+            </div>
+        </div>
+
+        <!-- WHAT IS BRAINTRUST -->
+        <div class="section" id="what-is">
+            <h2>🎯 What Is BrainTrust IDE?</h2>
+            <p>BrainTrust is <strong>not a chat interface with an editor bolted on</strong>. It's a collaborative workspace where:</p>
+            <ul>
+                <li><strong>You, Claude, and Gemini work as a real team</strong> with turn-based structure</li>
+                <li><strong>Both AIs have persistent memory</strong> — they remember everything across all messages</li>
+                <li><strong>AIs can read and write files directly</strong> in your project</li>
+                <li><strong>Python scripts execute in a Docker sandbox</strong> and output appears in the chat window</li>
+                <li><strong>PHP and HTML web apps open as live browser previews</strong> served by Apache with full database access</li>
+                <li><strong>Context is managed automatically</strong> — no copy/pasting code snippets</li>
+            </ul>
+
+            <h3>The Turn Order</h3>
+            <p><strong>Human → Claude → Gemini → Repeat</strong></p>
+            <p>Every message you send gets thoughtful responses from both AIs in sequence. Either AI can be toggled off for solo sessions. Different AI models can also be selected on the fly.</p>
+
+            <div class="callout">
+                <strong>Key Difference:</strong> Both AIs remember the full conversation natively via persistent CLI sessions. They don't forget what was decided 50 messages ago.
+            </div>
+        </div>
+
+        <!-- GETTING STARTED -->
+        <div class="section" id="getting-started">
+            <h2>🚀 Getting Started</h2>
+
+            <h3>Logging In</h3>
+            <p>Navigate to the BrainTrust IDE server in your browser. Enter your username and password.</p>
+
+            <img src="images/projects.jpg" alt="Projects Landing Page" style="max-width: 1000px; width: 100%; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px auto; display: block;">
+
+            <h3>Creating a Project</h3>
+            <ol>
+                <li>Enter a project name in the <strong>"New Project"</strong> field</li>
+                <li>Click <strong>Create Project</strong></li>
+                <li>BrainTrust creates the folder, a starter <code>README.md</code>, and chat session</li>
+                <li>Click <strong>Open</strong> to enter the project</li>
+            </ol>
+
+            <div class="callout">
+                <strong>Note:</strong> Project names are sanitized to lowercase with underscores. Example: "My Web App" → folder <code>my_web_app</code>
+            </div>
+
+            <div class="callout">
+                <strong>⚠️ Deleting Projects:</strong> Click the wastebasket icon to delete a project. This will permanently delete all files and chat history in that project. Use with caution!
+            </div>
+
+            <h3>Inviting Collaborators</h3>
+            <p>On any project card you own, click <strong>Invite</strong> and enter another BrainTrust user's username. They gain access to the same project and chat session.</p>
+        </div>
+
+        <!-- IDE LAYOUT -->
+        <div class="section" id="layout">
+            <h2>📐 IDE Layout</h2>
+            <p>BrainTrust uses a flexible three-panel layout:</p>
+
+            <img src="images/layout.jpg" alt="Full IDE Layout" style="width: 100%; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px 0;">
+
+            <h3>Resizing & Cycling Layouts</h3>
+            <ul>
+                <li><strong>Drag dividers</strong> between panels to resize (fully flexible)</li>
+                <li><strong>Click 📁💬📝</strong> in the top bar to cycle through three panel arrangements</li>
+                <li>Your layout preference is saved and restored on next load</li>
+            </ul>
+        </div>
+
+        <!-- TOP BAR -->
+        <div class="section">
+            <h2>🔧 The Top Bar</h2>
+            <p>Global tools accessible from anywhere in the IDE:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Button</th>
+                            <th>What it does</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>📁💬📝</td>
+                            <td>Cycle panel layout (3 arrangements)</td>
+                        </tr>
+                        <tr>
+                            <td>🖥️ Terminal</td>
+                            <td>Open the real PTY terminal</td>
+                        </tr>
+                        <tr>
+                            <td>🗄️ Database</td>
+                            <td>Run SQL queries</td>
+                        </tr>
+                        <tr>
+                            <td>📊 Whiteboard</td>
+                            <td>Mermaid diagrams & project map</td>
+                        </tr>
+                        <tr>
+                            <td>📋 Logs</td>
+                            <td>Execution logs console</td>
+                        </tr>
+                        <tr>
+                            <td>🐙 GitHub</td>
+                            <td>Create repo, commit & push, or pull from remote</td>
+                        </tr>
+                        <tr>
+                            <td>🔖 Bookmarks</td>
+                            <td>View bookmarked messages</td>
+                        </tr>
+                        <tr>
+                            <td>📤 Export</td>
+                            <td>Export chat to Markdown</td>
+                        </tr>
+                        <tr>
+                            <td>📋 Projects</td>
+                            <td>Return to projects list</td>
+                        </tr>
+                        <tr>
+                            <td>🚪</td>
+                            <td>Log out</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- EXPLORER PANEL -->
+        <div class="section" id="explorer">
+            <h2>📁 Explorer Panel (Left)</h2>
+            <p>Manage all files and folders in your project.</p>
+
+            <img src="images/explorer.jpg" alt="Explorer Panel" style="max-width: 250px; width: 100%; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px auto; display: block;">
+
+            <h3>File Operations</h3>
+            <ul>
+                <li><strong>📄+ New File</strong> — Create a new file (include extension)</li>
+                <li><strong>📁+ New Folder</strong> — Create a new subdirectory</li>
+                <li><strong>🔄 Refresh</strong> — Manually refresh (auto-refreshes on changes)</li>
+                <li><strong>📁 Explorer</strong> — Server File Browser (edit files anywhere on server)</li>
+                <li><strong>Click a file</strong> — Open in Monaco editor</li>
+                <li><strong>Right-click a file</strong> — Rename, Delete, Copy Path, Select All, or Delete Selected</li>
+            </ul>
+
+            <h3>Multi-File Selection</h3>
+            <ul>
+                <li><strong>Ctrl+Click</strong> (Windows/Linux) or <strong>⌘+Click</strong> (Mac) — Toggle individual files in/out of selection</li>
+                <li><strong>Right-click → ☑️ Select All Files</strong> — Select every file in the explorer at once</li>
+                <li>Once 2 or more items are selected, right-click reveals <strong>🗑️ Delete Selected (N)</strong></li>
+                <li>One confirmation prompt, then all selected items are deleted in one shot</li>
+                <li>Right-clicking an item that isn't part of your current selection resets back to single-item mode</li>
+            </ul>
+
+            <div class="callout">
+                <strong>Pro Tip:</strong> To nuke a project folder and start fresh — right-click any file → <strong>☑️ Select All Files</strong>, then right-click again → <strong>🗑️ Delete Selected (N)</strong>. One confirm and it's done.
+            </div>
+
+            <h3>Upload Files</h3>
+            <p>Click <strong>📁 Upload File</strong> in the chat to upload files from your computer. Multi-file selection supported.</p>
+
+            <div class="callout">
+                <strong>Auto-Refresh:</strong> The file tree refreshes automatically when AI creates files, canvas images are saved, or files are uploaded.
+            </div>
+        </div>
+
+        <!-- CHAT PANEL -->
+        <div class="section" id="chat">
+            <h2>💬 Chat Panel (Center)</h2>
+            <p>Where all collaboration happens. Type your message and press <strong>Enter</strong> or click <strong>Send ➤</strong>.</p>
+
+            <img src="images/chat.jpg" alt="Chat Interface" style="max-width: 800px; width: 100%; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px auto; display: block;">
+
+            <h3>AI Action Buttons</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🤝 AI Collab</h3>
+                    <p>Type your instructions and click AI Collab — your message is sent and collab mode activates in one click. AIs debate for up to 10 messages, then return the floor to you. If the input is empty, just activates collab without sending a message.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛑 SHUT UP</h3>
+                    <p>Immediately stop the current AI turn or Collab session.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📁 Upload File</h3>
+                    <p>Upload files from your computer directly to the project.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🖼️ Canvas</h3>
+                    <p>Open the image canvas for screenshots and drawing.</p>
+                </div>
+            </div>
+
+            <h3>AI Toggle Buttons</h3>
+            <p>Toggle buttons for Claude and Gemini on the right side of the action bar:</p>
+            <ul>
+                <li><strong>Left-click</strong> — Toggle on/off</li>
+                <li><strong>Right-click</strong> — Open model picker and CLI monitor menu</li>
+                <li><strong>Status dot:</strong>
+                    <ul>
+                        <li><span style="color: #28a745;">🟢 Green</span> = CLI mode (persistent memory)</li>
+                        <li><span style="color: #ffc107;">🟠 Orange</span> = API fallback (stateless)</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>Floor Control</h3>
+            <p>Lock the turn to a specific AI for focused work:</p>
+            <ul>
+                <li><strong>"No Floor"</strong> — Normal turn order</li>
+                <li><strong>"Claude Floor"</strong> — Only Claude responds</li>
+                <li><strong>"Gemini Floor"</strong> — Only Gemini responds</li>
+            </ul>
+
+            <div class="callout">
+                <strong>Example:</strong> Set Gemini Floor, then give it three consecutive refactoring instructions without Claude interrupting.
+            </div>
+
+            <h3>Bookmarking Messages</h3>
+            <p>Hover over any message to reveal the 🔖 icon. Click it to bookmark (turns gold). Click again to remove. Bookmarks persist across sessions.</p>
+
+            <h3>AI File Protocol</h3>
+            <p>When AIs work with files, they use special commands:</p>
+            <div class="code-block">CREATE_FILE: path/to/filename.py
+```python
+# file contents here
+```
+
+RUN_FILE: filename.py
+READ_FILE: filename.py
+            </div>
+            <p>The system automatically processes these — file explorer refreshes, buttons appear, files open.</p>
+        </div>
+
+        <!-- EDITOR PANEL -->
+        <div class="section" id="editor">
+            <h2>✏️ Editor Panel (Right)</h2>
+            <p>A full Monaco editor (same engine VS Code uses).</p>
+
+            <img src="images/editor.jpg" alt="Editor Panel with Code" style="max-width: 800px; width: 100%; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px auto; display: block;">
+
+            <h3>Core Features</h3>
+            <ul>
+                <li><strong>💾 Save</strong> — Save current file (or use <span class="key">Ctrl+S</span>)</li>
+                <li><strong>🕐 History</strong> — View and restore file snapshots</li>
+                <li><strong>✕ Close</strong> — Close current file</li>
+                <li><strong>⛶ Expand</strong> — Full-screen editing modal</li>
+                <li><strong>Syntax highlighting</strong> — Based on file extension</li>
+            </ul>
+
+            <h3>Snapshot History</h3>
+            <p>Before any AI overwrites a file:</p>
+            <ul>
+                <li>File is auto-snapshotted (20-snapshot cap per file)</li>
+                <li>Click <strong>🕐 History</strong> to view snapshots</li>
+                <li>Preview in read-only Monaco</li>
+                <li>Click <strong>Restore This Version</strong> to rollback (current saved as snapshot first)</li>
+            </ul>
+
+            <div class="callout">
+                <strong>Safety Net:</strong> Snapshots mean you can always roll back if an AI's change breaks something.
+            </div>
+
+            <h3>Server File Browser</h3>
+            <p>Click <strong>📁 Explorer</strong> in the Explorer panel header to browse and edit files anywhere on the server within safe boundaries: <code>/var/www</code>, <code>/home</code>, <code>/etc</code>, <code>/usr/local</code>.</p>
+        </div>
+
+        <!-- AI COLLABORATION -->
+        <div class="section" id="ai-collab">
+            <h2>🤖 AI Collaboration</h2>
+
+            <h3>Normal Turn Flow</h3>
+            <ol>
+                <li>You type a message and hit Send</li>
+                <li>Claude responds</li>
+                <li>Gemini responds (reads Claude's answer first)</li>
+                <li>Turn returns to you</li>
+            </ol>
+            <p>Both AIs see each other's work and naturally build upon it.</p>
+
+            <h3>AI Collab Mode</h3>
+            <p>Type your prompt and click <strong>🤝 AI Collab</strong> — your message is sent and collab mode activates in one action. No need to send first and wait for the AIs to respond before starting collab.</p>
+            <p>If the message box is empty, clicking AI Collab just activates the mode without sending anything.</p>
+            <p><strong>Best for:</strong></p>
+            <ul>
+                <li>Debating architecture decisions</li>
+                <li>One writing code while the other reviews</li>
+                <li>Exploratory problem-solving</li>
+            </ul>
+
+
+            <h3>CLI Monitor</h3>
+            <p>Right-click an AI toggle button → <strong>"View CLI"</strong> to watch the AI work in real time:</p>
+            <ul>
+                <li><strong>[thinking]</strong> — The AI's internal reasoning (Claude)</li>
+                <li><strong>[tool]</strong> — File reads, writes, bash commands</li>
+                <li><strong>[result]</strong> — Tool output</li>
+                <li><strong>[complete]</strong> — Final cost for the turn</li>
+            </ul>
+
+            <img src="images/cli_monitor.jpg" alt="CLI Monitor" style="max-width: 500px; width: 100%; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px auto; display: block;">
+
+            <h3 id="ai-permissions">⚙️ AI Options (Permissions)</h3>
+            <p>Right-click any Claude or Gemini badge → <strong>⚙️ AI Options</strong> to control what that AI is allowed to do in this session. Permissions persist per project.</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>Permission</th><th>What It Controls</th><th>Enforcement</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>✏️ Write Files</td><td>Allow/block file creation via CREATE_FILE protocol</td><td>Server-side — file write is physically blocked</td></tr>
+                        <tr><td>🗑️ Delete Files</td><td>Allow/block file deletion</td><td>Behavioral — injected into AI instructions</td></tr>
+                        <tr><td>▶️ Run Code</td><td>Show/hide RUN_FILE execute buttons in chat</td><td>Client-side — pill renders as blocked</td></tr>
+                        <tr><td>🖥️ Use Terminal</td><td>Allow/block terminal/shell commands</td><td>Behavioral — injected into AI instructions</td></tr>
+                        <tr><td>📦 Install Packages</td><td>Allow/block package installation</td><td>Behavioral — injected into AI instructions</td></tr>
+                        <tr><td>👑 Project Lead</td><td>Designate this AI as lead with final say on decisions</td><td>System prompt — mutually exclusive (one lead at a time)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout">
+                <strong>Heads up:</strong> Every permission change posts a system message to the chat so both AIs immediately know about it — no stale assumptions. The AI also receives a one-shot reminder on their very next turn.
+            </div>
+        </div>
+
+        <!-- IMAGE CANVAS -->
+        <div class="section" id="canvas">
+            <h2>🖼️ Image Canvas</h2>
+            <p>Capture, annotate, and share visual feedback with the AIs.</p>
+
+            <h3>Pasting Screenshots</h3>
+            <ol>
+                <li>Take a screenshot with Snipping Tool or any capture tool</li>
+                <li>Copy it (<span class="key">Ctrl+C</span>)</li>
+                <li>Click <strong>🖼️ Canvas</strong></li>
+                <li>Press <span class="key">Ctrl+V</span> — image appears</li>
+            </ol>
+
+            <img src="images/canvas.jpg" alt="Canvas with Screenshot" style="max-width: 900px; width: 100%; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px auto; display: block;">
+
+            <h3>Drawing Tools</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Shortcut</th>
+                            <th>Use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>✏️ Pen</td>
+                            <td><span class="key">P</span></td>
+                            <td>Freehand drawing</td>
+                        </tr>
+                        <tr>
+                            <td>⬜ Rectangle</td>
+                            <td><span class="key">R</span></td>
+                            <td>Draw a rectangle</td>
+                        </tr>
+                        <tr>
+                            <td>⭕ Circle</td>
+                            <td><span class="key">C</span></td>
+                            <td>Draw a circle/ellipse</td>
+                        </tr>
+                        <tr>
+                            <td>T Text</td>
+                            <td><span class="key">T</span></td>
+                            <td>Place a text label</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p><strong>Also available:</strong> Color picker, stroke width, font size controls.</p>
+
+            <h3>Saving to Project</h3>
+            <ol>
+                <li>Click <strong>💾 Save to Project</strong></li>
+                <li>Enter a filename (e.g., <code>ui_bug.jpg</code>)</li>
+                <li>Image saves to your project folder</li>
+                <li>Tell Claude/Gemini to open it — they read directly from disk</li>
+            </ol>
+
+            <div class="callout">
+                <strong>Why This Works:</strong> Full persistent context, no memory fragmentation. AIs see the real image file, not a description.
+            </div>
+
+            <h3>Example Workflow</h3>
+            <ol>
+                <li>Screenshot a UI bug</li>
+                <li>Use the circle tool to highlight the broken element</li>
+                <li>Add a text label: "this div is misaligned"</li>
+                <li>Save as <code>bug_report.jpg</code></li>
+                <li>Message: "Claude, look at bug_report.jpg and suggest a CSS fix"</li>
+            </ol>
+        </div>
+
+        <!-- TERMINAL -->
+        <div class="section" id="terminal">
+            <h2>🖥️ Terminal</h2>
+            <p>A real PTY terminal (same engine VS Code uses: xterm.js + node-pty).</p>
+
+            <img src="images/terminal.jpg" alt="Terminal Window" style="max-width: 800px; width: 100%; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px auto; display: block;">
+
+            <h3>What You Get</h3>
+            <ul>
+                <li><strong>Real bash</strong> — <code>cd</code> actually works, shell state persists</li>
+                <li><strong>Tab completion</strong> — native bash completion</li>
+                <li><strong>Command history</strong> — <span class="key">↑</span>/<span class="key">↓</span> arrows work; history saved per-project across reloads</li>
+                <li><strong>Streaming output</strong> — See <code>git clone</code> progress, <code>npm install</code> in real time</li>
+                <li><strong>Full color</strong> — <code>ls --color</code>, <code>htop</code>, <code>docker logs -f</code> all render correctly</li>
+                <li><strong>Control keys</strong> — <span class="key">Ctrl+C</span>, <span class="key">Ctrl+Z</span>, <span class="key">Ctrl+L</span> work as expected</li>
+            </ul>
+
+            <h3>Terminal Features</h3>
+            <ul>
+                <li><strong>Quick Commands dropdown</strong> — 30+ pre-configured server management commands</li>
+                <li><strong>Terminal history file</strong> — Stored in <code>.terminal_history</code> (per-project)</li>
+                <li><strong>Session persistence</strong> — Close modal and reopen, you're back in the same shell</li>
+                <li><strong>Sudo support</strong> — Passwordless auth for common operations</li>
+                <li><strong>Starts in project directory</strong></li>
+            </ul>
+
+            <div class="callout">
+                <strong>Pro Tip:</strong> Terminal history is per-project, so commands for Project A don't pollute Project B.
+            </div>
+        </div>
+
+        <!-- WHITEBOARD -->
+        <div class="section" id="whiteboard">
+            <h2>📊 Whiteboard</h2>
+            <p>Diagram viewer and generator using Mermaid.js.</p>
+
+            <h3>AI-Generated Diagrams</h3>
+            <p>When an AI generates a Mermaid diagram in its response, it's automatically rendered in the Whiteboard. The Whiteboard button pulses orange to let you know a new diagram is available.</p>
+
+            <img src="images/whiteboard.jpg" alt="Whiteboard with Diagram" style="max-width: 800px; width: 100%; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px auto; display: block;">
+
+            <h3>Generate Project Map</h3>
+            <p>Click <strong>🗺️ Generate Map</strong> inside the Whiteboard modal. BrainTrust scans your project files and generates an architecture diagram showing how files connect via imports, includes, and fetch calls.</p>
+
+            <p><strong>Perfect for:</strong></p>
+            <ul>
+                <li>Understanding new codebases</li>
+                <li>Showing the big picture to AIs</li>
+                <li>Documenting project structure</li>
+            </ul>
+
+            <h3>Whiteboard Controls</h3>
+            <ul>
+                <li><strong>💾 Save</strong> — Saves diagram as <code>.mmd</code> and <code>.svg</code> in <code>/whiteboards/</code></li>
+                <li><strong>🖨️ Print</strong> — Opens print dialog</li>
+                <li><strong>🗑️ Clear</strong> — Clears current diagram</li>
+            </ul>
+        </div>
+
+        <!-- GITHUB INTEGRATION -->
+        <div class="section" id="github">
+            <h2>🐙 GitHub Integration</h2>
+            <p>Create repos, commit & push changes, and pull from remote — all without leaving BrainTrust.</p>
+
+            <h3>First Time — New Repo Wizard</h3>
+            <img src="images/github.jpg" alt="GitHub Repo Wizard" style="max-width: 800px; width: 100%; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px auto; display: block;">
+
+            <ol>
+                <li><strong>Repo name</strong> — Defaults to your project name (editable)</li>
+                <li><strong>Visibility</strong> — Public or Private (defaults to Private)</li>
+                <li><strong>Files to ignore</strong> — Common patterns pre-checked (<code>node_modules/</code>, <code>.env</code>, <code>__pycache__/</code>, etc.)</li>
+                <li><strong>Commit message</strong> — Defaults to "Initial commit"</li>
+                <li>Click <strong>🚀 Create Repo & Push</strong></li>
+            </ol>
+
+            <p>BrainTrust automatically:</p>
+            <ul>
+                <li>Creates the repo on GitHub via API</li>
+                <li>Runs <code>git init</code></li>
+                <li>Writes <code>.gitignore</code></li>
+                <li>Commits everything</li>
+                <li>Pushes to <code>main</code></li>
+            </ul>
+
+            <h3>Existing Repo — Commit & Push</h3>
+            <p>After the first push, opening GitHub shows your full sync dashboard:</p>
+            <ul>
+                <li>Your repo URL (clickable link)</li>
+                <li>Current branch badge (e.g., <strong>🌿 main</strong>)</li>
+                <li>Changed/new files with status badges (Modified, Added, Deleted, Renamed, Untracked) and checkboxes</li>
+                <li>Commit message field</li>
+                <li><strong>📤 Commit & Push</strong> — stages selected files, commits, and pushes to origin</li>
+            </ul>
+
+            <div class="callout">
+                <strong>Selective commits:</strong> Uncheck any files you don't want included before hitting Commit & Push. Check all / Uncheck all buttons are available for convenience.
+            </div>
+
+            <h3>Pulling from Remote — 📥 Pull</h3>
+            <p>The <strong>📥 Pull</strong> button sits in the top-right of the existing repo view, next to the repo URL. Click it to pull the latest changes from origin into your local project.</p>
+            <ul>
+                <li>Button cycles through <strong>⏳ Pulling…</strong> → <strong>✅ Pulled!</strong> so you always know the status</li>
+                <li>The actual git output is shown (fast-forward details, "Already up to date", merge info)</li>
+                <li>Works anytime — whether the working tree is clean or has local changes</li>
+            </ul>
+
+            <div class="callout">
+                <strong>Good habit:</strong> Hit <strong>📥 Pull</strong> before starting a new coding session to make sure your local copy is in sync with remote — especially if the AIs committed anything or you pushed from another machine.
+            </div>
+
+            <h3>Clone an Existing Repo — 📥 Clone Existing</h3>
+            <p>Have a new BrainTrust project and want to pull in an existing GitHub repo instead of starting from scratch? The GitHub modal now has two tabs when a project has no git history yet:</p>
+            <ul>
+                <li><strong>✨ New Repo</strong> — the original wizard (creates a new repo on GitHub)</li>
+                <li><strong>📥 Clone Existing</strong> — paste a URL, clone it in</li>
+            </ul>
+
+            <p>To clone an existing repo into a new project:</p>
+            <ol>
+                <li>Create a new project (or open one with no git history)</li>
+                <li>Click <strong>🐙 GitHub</strong> in the top bar</li>
+                <li>Click the <strong>📥 Clone Existing</strong> tab</li>
+                <li>Paste the GitHub repo URL (e.g. <code>https://github.com/username/repo</code>)</li>
+                <li>Click <strong>📥 Clone Repository</strong></li>
+                <li>Hit <strong>🔄 Refresh</strong> in the Explorer to see the cloned files</li>
+            </ol>
+
+            <div class="callout">
+                <strong>Note:</strong> Cloning overwrites any existing files in the project folder (including the auto-generated <code>README.md</code>) with the repo contents. The project is then fully connected to the remote — future pushes and pulls work normally via the GitHub modal.
+            </div>
+
+            <h3>Setup</h3>
+            <p>Your GitHub token is stored in <code>/var/www/secure_config/braintrust_config.php</code> (never committed to git). Requires a Personal Access Token with <strong>repo</strong> scope from GitHub → Settings → Developer settings → Personal access tokens.</p>
+        </div>
+
+        <!-- BOOKMARKS -->
+        <div class="section">
+            <h2>🔖 Bookmarks</h2>
+            <p>Click <strong>🔖 Bookmarks</strong> in the top bar to view all bookmarked messages.</p>
+
+            <img src="images/bookmarks.jpg" alt="Bookmarks Modal" style="max-width: 500px; width: 100%; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 30px auto; display: block;">
+
+            <p>Each bookmark shows:</p>
+            <ul>
+                <li>Sender avatar and name</li>
+                <li>Timestamp</li>
+                <li>Message preview (first 300 characters)</li>
+                <li><strong>×</strong> button to remove</li>
+            </ul>
+
+            <h3>Good Uses</h3>
+            <ul>
+                <li>Mark a key architectural decision</li>
+                <li>Save a particularly good AI explanation</li>
+                <li>Flag messages you need to act on</li>
+            </ul>
+
+            <div class="callout">
+                <strong>Pro Tip:</strong> Bookmark decisions. Future-you (and future AI sessions) will thank present-you.
+            </div>
+        </div>
+
+        <!-- WEB PREVIEW -->
+        <div class="section" id="web-preview">
+            <h2>🌐 Web Preview</h2>
+            <p>Test PHP web apps and HTML pages built by the AIs directly in your browser — with full database access.</p>
+
+            <h3>How It Works</h3>
+            <p>When an AI creates a PHP or HTML file and issues a <code>RUN_FILE:</code> command, BrainTrust generates a live preview URL and opens it automatically in a new browser tab. The file is served by Apache on the server — not in a sandbox — so your full PHP stack and MySQL database are available.</p>
+
+            <h3>Database Access</h3>
+            <p>A shared DB config is available at <code>/var/www/secure_config/dev_db_config.php</code>. The AIs know to use it — the project <code>README.md</code> tells them to <code>require_once</code> this file for any MySQL connections. Your credentials never appear in project files.</p>
+
+            <div class="callout">
+                <strong>Python scripts</strong> still run in the Docker sandbox (non-interactive, no network). PHP and HTML go straight to Apache for browser preview.
+            </div>
+
+            <div class="callout">
+                <strong>Note:</strong> The sandbox is non-interactive. Python scripts that use <code>input()</code> will fail with EOFError — the AIs know this and will write scripts that run start-to-finish without user prompts.
+            </div>
+
+            <h3>Example Workflow</h3>
+            <ol>
+                <li>Tell Claude and Gemini to build a PHP web app (e.g., "build a customer order tracker with MySQL")</li>
+                <li>They create the files and issue <code>RUN_FILE: index.php</code></li>
+                <li>A new browser tab opens with your live running app</li>
+                <li>Test it, screenshot any issues with the Canvas tool, report back</li>
+            </ol>
+        </div>
+
+        <!-- TIPS & TRICKS -->
+        <div class="section">
+            <h2>💡 Tips & Tricks</h2>
+
+            <div class="tips-section">
+                <h3>Give the AIs context up front</h3>
+                <p>The more specific you are, the better the output.</p>
+                <p><em>"I'm building a patient scheduling system in PHP 8.2 with MySQL. The appointments table has columns: id, patient_id, doctor_id, appointment_time, status."</em></p>
+            </div>
+
+            <div class="tips-section">
+                <h3>Use Floor mode for focused work</h3>
+                <p>If you're iterating on a specific problem with Claude, set Claude Floor so Gemini doesn't chime in on every message.</p>
+            </div>
+
+            <div class="tips-section">
+                <h3>Let them read your files</h3>
+                <p>Say "read index.php" and the AI opens and reads the file in full. You don't need to paste code into the chat.</p>
+            </div>
+
+            <div class="tips-section">
+                <h3>Canvas for visual feedback</h3>
+                <p>Instead of describing a UI bug in words, screenshot it, circle the problem, save it to the project, and ask the AI to look at it.</p>
+            </div>
+
+            <div class="tips-section">
+                <h3>AI Collab for architecture</h3>
+                <p>Type your question or problem directly in the input box, then click AI Collab. Your message is sent and the debate starts immediately — one click instead of three steps.</p>
+            </div>
+
+            <div class="tips-section">
+                <h3>Test web apps instantly</h3>
+                <p>When the AIs build a PHP or HTML app and run it, a live browser tab opens automatically. Screenshot bugs with the Canvas tool, save to the project, and tell the AIs to look at it — no copy-pasting error messages needed.</p>
+            </div>
+
+            <div class="tips-section">
+                <h3>Project Map for new codebases</h3>
+                <p>Dropped into an unfamiliar project? Hit Whiteboard → Generate Map. You'll get a visual diagram of how all the files connect.</p>
+            </div>
+
+            <div class="tips-section">
+                <h3>History is your safety net</h3>
+                <p>The AIs auto-snapshot files before overwriting them. If an AI's change breaks something, click 🕐 History in the editor and roll back.</p>
+            </div>
+
+            <div class="tips-section">
+                <h3>Bookmark decisions</h3>
+                <p>Whenever a significant architectural decision is made in chat, bookmark it. Future-you (and future AI sessions) will thank present-you.</p>
+            </div>
+
+            <div class="tips-section">
+                <h3>Use permissions to divide labour</h3>
+                <p>Working with both AIs active? Make Claude the writer and Gemini the reviewer — give Claude Write Files and block it for Gemini. Or crown one as 👑 Project Lead to settle architecture debates. Right-click any AI badge → ⚙️ AI Options.</p>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p><strong>BrainTrust IDE v3</strong> — Built by Shannon Hensley, 2026</p>
+            <p>Powered by Claude (Anthropic) + Gemini (Google) + a lot of Sunkist Zero</p>
+        </div>
+    </div>
+</body>
+</html>

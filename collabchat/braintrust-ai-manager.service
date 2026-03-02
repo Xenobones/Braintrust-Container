@@ -1,0 +1,24 @@
+[Unit]
+Description=BrainTrust v3 AI Session Manager
+Documentation=https://github.com/Xenobones/Braintrust-IDE
+After=network.target braintrust-ws.service
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/html/braintrust-IDE-3/collabchat
+ExecStart=/usr/bin/node /var/www/html/braintrust-IDE-3/collabchat/ai_manager.js
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=braintrust-ai-manager
+
+# API keys — copy from secure_config and set here
+# Environment=ANTHROPIC_API_KEY=sk-ant-...
+# Environment=GEMINI_API_KEY=AIza...
+# NOTE: Keys are also passed per-request by PHP, so these are optional
+# but set them here if you want ai_manager to have them as fallback.
+
+[Install]
+WantedBy=multi-user.target

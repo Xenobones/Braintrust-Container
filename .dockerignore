@@ -1,0 +1,32 @@
+# Git
+.git
+.gitignore
+
+# Claude Code
+.claude
+
+# Local env files (never bake credentials into the image)
+.env
+.env.local
+
+# Dev/editor
+.vscode
+*.swp
+*.swo
+
+# Project files (mounted as a volume at runtime)
+collabchat/projects/*
+!collabchat/projects/.gitkeep
+
+# Logs
+collabchat/logs/*
+*.log
+
+# Node — must be rebuilt inside container (node-pty is native, host binaries won't work)
+node_modules
+**/node_modules
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
