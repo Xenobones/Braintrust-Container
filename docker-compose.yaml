@@ -48,7 +48,7 @@ services:
     container_name: braintrust-db
     restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_RANDOM_ROOT_PASSWORD=1
       - MYSQL_DATABASE=${DB_NAME:-braintrust_ide}
       - MYSQL_USER=${DB_USER:-braintrust_user}
       - MYSQL_PASSWORD=${DB_PASS}
