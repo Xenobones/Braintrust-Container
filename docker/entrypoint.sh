@@ -4,7 +4,7 @@ set -e
 echo "=== BrainTrust IDE v3 — Container Startup ==="
 
 # ── Validate required env vars ────────────────────────────────────────────────
-REQUIRED_VARS=("DB_PASS" "CLAUDE_API_KEY" "GEMINI_API_KEY" "MYSQL_ROOT_PASSWORD")
+REQUIRED_VARS=("DB_PASS" "CLAUDE_API_KEY" "GEMINI_API_KEY")
 MISSING=0
 for var in "${REQUIRED_VARS[@]}"; do
     if [ -z "${!var}" ]; then
