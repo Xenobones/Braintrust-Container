@@ -59,10 +59,11 @@ services:
       - ./sql_schema.txt:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./docker/init-dev-db.sql:/docker-entrypoint-initdb.d/02-dev-db.sql:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
 
 volumes:
   projects_data:
